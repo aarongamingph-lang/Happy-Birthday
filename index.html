@@ -1,0 +1,356 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy birthday</title>	    
+    <style>
+        #main,
+        #end-images img,
+        #scene {
+            opacity: 0;
+            visibility: hidden;
+        }
+        #intro {
+            position: fixed;
+            inset: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+            color: #fff;
+        }
+    </style>
+    <link type="text/css" rel="stylesheet" href="./default.css">
+    <script type="text/javascript" src="./jquery.min.js"></script>
+    <script type="text/javascript" src="./jscex.min.js"></script>
+    <script type="text/javascript" src="./jscex-parser.js"></script>
+    <script type="text/javascript" src="./jscex-jit.js"></script>
+    <script type="text/javascript" src="./jscex-builderbase.min.js"></script>
+    <script type="text/javascript" src="./jscex-async.min.js"></script>
+    <script type="text/javascript" src="./jscex-async-powerpack.min.js"></script>
+    <script type="text/javascript" src="./functions.js" charset="utf-8"></script>
+    <script type="text/javascript" src="./love.js" charset="utf-8"></script>
+    <script>
+        function playAudio() {
+            var audio = document.getElementById("myAudio");
+            if (audio && audio.play) {
+                var playPromise = audio.play();
+                if (playPromise && playPromise.catch) {
+                    playPromise.catch(function() {});
+                }
+            }
+        }
+
+        function playBackgroundMusic() {
+            var music = document.getElementById("background-music");
+            if (music && music.play) {
+                music.volume = 0.75;
+                var playPromise = music.play();
+                if (playPromise && playPromise.catch) {
+                    playPromise.catch(function() {});
+                }
+            }
+        }
+
+        function fitPhoneLandscape() {
+            var landscapePhone = window.innerWidth > window.innerHeight && window.innerHeight <= 520;
+            var scale = landscapePhone ? Math.min(window.innerWidth / 1100, window.innerHeight / 680) : 1;
+            document.documentElement.style.setProperty("--scene-scale", scale);
+        }
+
+        fitPhoneLandscape();
+        window.addEventListener("resize", fitPhoneLandscape);
+
+        function enterFullScreenLandscape() {
+            var page = document.documentElement;
+            var fullScreen = page.requestFullscreen ? page.requestFullscreen() : Promise.resolve();
+
+            return Promise.resolve(fullScreen).then(function() {
+                if (screen.orientation && screen.orientation.lock) {
+                    return screen.orientation.lock("landscape").catch(function() {});
+                }
+            }).catch(function() {});
+        }
+    </script>
+</head>
+<body>
+    <audio id="background-music" preload="auto" loop>
+        <source src="./blue%20-%20yung%20kai%20-%20Fingerstyle%20Guitar%20Cover.mp3" type="audio/mp3" />
+    </audio>
+    <div id="intro">
+        <div class="floating-dots">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="intro-panel">
+            <div class="intro-title">Turn landscape for better experience</div>
+            <button id="proceed-button" type="button">Proceed</button>
+        </div>
+    </div>
+    <div id="white-glow"></div>
+    <div id="main">
+        <div class="final-orbs">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <canvas id="scene"></canvas>
+        <div id="end-images">
+            <img src="./679855344_2081198356085630_6744608323343278255_n.jpg" alt="" />
+            <img src="./680244074_26808490568790961_2712090673849635186_n.jpg" alt="" />
+            <img src="./682483150_1716935672658361_5482597311112366966_n.jpg" alt="" />
+            <img src="./685680578_1296082575218510_7790836848628642996_n.jpg" alt="" />
+            <img src="./686475146_1462154675953040_3442466055961212163_n.jpg" alt="" />
+            <img src="./688572643_1278324807844908_2455102007542310114_n.jpg" alt="" />
+        </div>
+        <div id="error"><a href="http://www.google.cn/chrome/intl/zh-CN/landing_chrome.html?hl=zh-CN&brand=CHMI">Chrome</a> (<a href="http://firefox.com.cn/download/">Firefox</a>)</div>
+        <div id="wrap">
+            <div id="text">
+                <div id="code">
+                    <span class="say">Hellow po ateh.</span><br><br>
+                    <span class="say">Happy birthday and Happy valentines to you.</span><br><br>
+                    <span class="say">And i wanna say that.</span><br><br>
+                    <span class="say">Im happy to have met you, and I hope na you keep doing your best kahit man sobrang stress na, hays. but still go on, and I hope na you can find your peace one day that will bring you happiness and being able to do what you want and feel what you want to feel, dont get discourage about what others think, know that there is someone always by your side, and one last thing, you are beautiful when you smile, so please keep smiling.</span><br>
+                </div>
+            </div>
+            <div id="clock-box">
+                <span id="clock">577 days 0 hours 0 minutes 0 seconds</span> <!-- Change to "6940 days..." if needed -->
+            </div>
+            <canvas id="canvas" width="1100" height="680"></canvas>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="./script.js"></script>
+    <script>
+    (function() {
+        var canvas = $('#canvas');
+		
+        if (!canvas[0].getContext) {
+            $("#error").show();
+            return false;
+        }
+
+        var width = canvas.width();
+        var height = canvas.height();        
+        canvas.attr("width", width);
+        canvas.attr("height", height);
+
+        var opts = {
+            seed: {
+                x: width / 2 - 20,
+                color: "rgb(190, 26, 37)",
+                scale: 2
+            },
+            branch: [
+                [535, 680, 570, 250, 500, 200, 30, 100, [
+                    [540, 500, 455, 417, 340, 400, 13, 100, [
+                        [450, 435, 434, 430, 394, 395, 2, 40]
+                    ]],
+                    [550, 445, 600, 356, 680, 345, 12, 100, [
+                        [578, 400, 648, 409, 661, 426, 3, 80]
+                    ]],
+                    [539, 281, 537, 248, 534, 217, 3, 40],
+                    [546, 397, 413, 247, 328, 244, 9, 80, [
+                        [427, 286, 383, 253, 371, 205, 2, 40],
+                        [498, 345, 435, 315, 395, 330, 4, 60]
+                    ]],
+                    [546, 357, 608, 252, 678, 221, 6, 100, [
+                        [590, 293, 646, 277, 648, 271, 2, 80]
+                    ]]
+                ]] 
+            ],
+            bloom: {
+                num: 700,
+                width: 1080,
+                height: 650,
+            },
+            footer: {
+                width: 1200,
+                height: 5,
+                speed: 10,
+            }
+        }
+
+        var tree = new Tree(canvas[0], width, height, opts);
+        var seed = tree.seed;
+        var foot = tree.footer;
+        var seedAnimate = eval(Jscex.compile("async", function () {
+            seed.draw();
+            canvas.addClass("seed-visible");
+            $await(Jscex.Async.sleep(900));
+            while (seed.canScale()) {
+                seed.scale(0.95);
+                $await(Jscex.Async.sleep(10));
+            }
+            while (seed.canMove()) {
+                seed.move(0, 2);
+                foot.draw();
+                $await(Jscex.Async.sleep(10));
+            }
+        }));
+
+        var growAnimate = eval(Jscex.compile("async", function () {
+            do {
+                tree.grow();
+                $await(Jscex.Async.sleep(10));
+            } while (tree.canGrow());
+        }));
+
+        var flowAnimate = eval(Jscex.compile("async", function () {
+            do {
+                tree.flower(2);
+                $await(Jscex.Async.sleep(10));
+            } while (tree.canFlower());
+        }));
+
+        var moveAnimate = eval(Jscex.compile("async", function () {
+            tree.snapshot("p1", 240, 0, 610, 680);
+            while (tree.move("p1", 500, 0)) {
+                foot.draw();
+                $await(Jscex.Async.sleep(10));
+            }
+            foot.draw();
+            tree.snapshot("p2", 500, 0, 610, 680);
+
+            canvas.parent().css("background", "url(" + tree.toDataURL('image/png') + ")");
+            canvas.css("background", "#ffe");
+            $await(Jscex.Async.sleep(300));
+            canvas.css("background", "none");
+        }));
+
+        var textAnimate = eval(Jscex.compile("async", function () {
+            var done = false;
+            $("#code").show().typewriter(function() {
+                done = true;
+            });
+            while (!done) {
+                $await(Jscex.Async.sleep(200));
+            }
+            $await(Jscex.Async.sleep(900));
+            $("#text").addClass("text-fade-out");
+            $await(Jscex.Async.sleep(1700));
+        }));
+
+        var centerTreeAnimate = eval(Jscex.compile("async", function () {
+            canvas.parent().css("background", "none");
+            tree.snapshot("centerBack", 500, 0, 610, 680);
+            tree.setSpeed("centerBack", 8);
+            while (tree.moveTo("centerBack", 240, 0)) {
+                foot.draw();
+                $await(Jscex.Async.sleep(10));
+            }
+            foot.draw();
+            if (window.startFireworksShow) {
+                window.startFireworksShow();
+            }
+            startEndImages();
+        }));
+	    
+        var runAsync = eval(Jscex.compile("async", function () {
+            $await(seedAnimate());
+            $await(growAnimate());
+            $await(flowAnimate());
+            $await(moveAnimate());
+            $await(textAnimate());
+            $await(centerTreeAnimate());
+        }));
+
+        window.startFinalPage = function() {
+            fitPhoneLandscape();
+            runAsync().start();
+        };
+
+        function startEndImages() {
+            var images = $("#end-images img");
+            var index = 0;
+            if (!images.length) return;
+
+            $("#end-images").addClass("images-started");
+
+            function showNextImage() {
+                var position = getImagePosition();
+                images.removeClass("active");
+                $("#end-images").css({
+                    left: position.left + "px",
+                    top: position.top + "px",
+                    right: "auto",
+                    bottom: "auto"
+                });
+                setTimeout(function() {
+                    images.eq(index).addClass("active");
+                    index = (index + 1) % images.length;
+                }, 80);
+            }
+
+            function getImagePosition() {
+                var box = $("#end-images");
+                var boxWidth = box.outerWidth();
+                var boxHeight = box.outerHeight();
+                var margin = 18;
+                var sceneScale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--scene-scale")) || 1;
+                var treeLeft = (window.innerWidth - (1100 * sceneScale)) / 2 + (215 * sceneScale);
+                var treeRight = treeLeft + (630 * sceneScale);
+                var treeTop = (window.innerHeight - (680 * sceneScale)) / 2 + (40 * sceneScale);
+                var treeBottom = treeTop + (610 * sceneScale);
+                var maxLeft = Math.max(margin, window.innerWidth - boxWidth - margin);
+                var maxTop = Math.max(margin, window.innerHeight - boxHeight - margin);
+
+                function isSafe(item) {
+                    var right = item.left + boxWidth;
+                    var bottom = item.top + boxHeight;
+                    var padding = 16;
+                    return right < treeLeft - padding || item.left > treeRight + padding || bottom < treeTop - padding || item.top > treeBottom + padding;
+                }
+
+                for (var attempt = 0; attempt < 40; attempt++) {
+                    var item = {
+                        left: margin + Math.random() * (maxLeft - margin),
+                        top: margin + Math.random() * (maxTop - margin)
+                    };
+                    if (isSafe(item)) {
+                        return item;
+                    }
+                }
+
+                var fallback = [
+                    { left: margin, top: margin },
+                    { left: maxLeft, top: margin },
+                    { left: margin, top: maxTop },
+                    { left: maxLeft, top: maxTop }
+                ];
+                return fallback[Math.floor(Math.random() * fallback.length)];
+            }
+
+            showNextImage();
+            setInterval(showNextImage, 8000);
+        }
+
+        $("#proceed-button").click(function() {
+            playAudio();
+            playBackgroundMusic();
+            enterFullScreenLandscape();
+            $("#intro").addClass("leaving");
+            $("#white-glow").addClass("glow-active");
+
+            setTimeout(function() {
+                $("#intro").hide();
+                $("#main").addClass("show-final");
+                fitPhoneLandscape();
+            }, 4000);
+
+            setTimeout(function() {
+                $("#white-glow").addClass("fade-out");
+            }, 4000);
+
+            setTimeout(function() {
+                $("#white-glow").removeClass("glow-active fade-out").hide();
+                $("#main").addClass("show-final");
+                window.startFinalPage();
+            }, 5000);
+        });
+    })();
+    </script>
+</body>
+</html>
