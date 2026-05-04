@@ -55,6 +55,10 @@
         }
 
         function fitPhoneLandscape() {
+            if (!document.documentElement.classList.contains("landscape-started")) {
+                document.documentElement.style.setProperty("--scene-scale", 1);
+                return;
+            }
             var smallScreen = window.innerWidth <= 920 || window.innerHeight <= 520;
             var scale = smallScreen ? Math.min(window.innerWidth / 1100, window.innerHeight / 680) : 1;
             document.documentElement.style.setProperty("--scene-scale", scale);
@@ -72,9 +76,14 @@
 
         function enterFullScreenLandscape() {
             var page = document.documentElement;
-            var fullScreen = page.requestFullscreen ? page.requestFullscreen() : Promise.resolve();
+            document.documentElement.classList.add("landscape-started");
+            var fullScreen = page.requestFullscreen
+                ? page.requestFullscreen({ navigationUI: "hide" })
+                : page.webkitRequestFullscreen
+                    ? page.webkitRequestFullscreen()
+                    : Promise.resolve();
 
-            return Promise.resolve(fullScreen).then(function() {
+            function lockLandscape() {
                 if (screen.orientation && screen.orientation.lock) {
                     return screen.orientation.lock("landscape-primary")
                         .catch(function() {
@@ -82,6 +91,26 @@
                         })
                         .catch(function() {});
                 }
+                return Promise.resolve();
+            }
+
+            function retryLandscapeLock() {
+                var tries = 0;
+                var timer = setInterval(function() {
+                    tries++;
+                    lockLandscape();
+                    if (tries >= 10 || window.innerWidth > window.innerHeight) {
+                        clearInterval(timer);
+                    }
+                }, 180);
+            }
+
+            document.addEventListener("fullscreenchange", retryLandscapeLock, { once: true });
+            document.addEventListener("webkitfullscreenchange", retryLandscapeLock, { once: true });
+
+            return Promise.resolve(fullScreen).then(function() {
+                retryLandscapeLock();
+                return lockLandscape();
             }).then(function() {
                 fitPhoneLandscape();
             }).catch(function() {});
@@ -126,6 +155,10 @@
                     <span class="say">Happy birthday and Happy valentines to you.</span><br><br>
                     <span class="say">And i wanna say that.</span><br><br>
                     <span class="say">Im happy to have met you, and I hope na you keep doing your best kahit man sobrang stress na, hays. but still go on, and I hope na you can find your peace one day that will bring you happiness and being able to do what you want and feel what you want to feel, dont get discourage about what others think, know that there is someone always by your side, and one last thing, you are beautiful when you smile, so please keep smiling.</span><br>
+                    <br>
+                    <span class="say">And, yung lang po.</span><br>
+                    <span class="say">Its not much man but i hope na it made you happy.</span><br>
+                    <span class="say">Anyways, Enjoy.</span><br>
                 </div>
             </div>
             <div id="clock-box">
@@ -341,6 +374,7 @@
         }
 
         $("#proceed-button").click(function() {
+            document.documentElement.classList.add("landscape-started");
             playAudio();
             playBackgroundMusic();
             enterFullScreenLandscape().then(function() {
