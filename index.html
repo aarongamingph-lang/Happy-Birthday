@@ -61,17 +61,41 @@
         }
 
         fitPhoneLandscape();
-        window.addEventListener("resize", fitPhoneLandscape);
+        window.addEventListener("resize", function() {
+            fitPhoneLandscape();
+            applyLandscapeFallback();
+        });
+        window.addEventListener("orientationchange", function() {
+            setTimeout(function() {
+                fitPhoneLandscape();
+                applyLandscapeFallback();
+            }, 350);
+        });
 
         function enterFullScreenLandscape() {
             var page = document.documentElement;
+            document.documentElement.classList.add("landscape-requested");
+
             var fullScreen = page.requestFullscreen ? page.requestFullscreen() : Promise.resolve();
 
             return Promise.resolve(fullScreen).then(function() {
                 if (screen.orientation && screen.orientation.lock) {
-                    return screen.orientation.lock("landscape").catch(function() {});
+                    return screen.orientation.lock("landscape-primary")
+                        .catch(function() {
+                            return screen.orientation.lock("landscape");
+                        })
+                        .catch(function() {});
                 }
+            }).then(function() {
+                applyLandscapeFallback();
             }).catch(function() {});
+        }
+
+        function applyLandscapeFallback() {
+            var shouldRotate = document.documentElement.classList.contains("landscape-requested") &&
+                window.innerHeight > window.innerWidth &&
+                window.innerWidth <= 520;
+            document.documentElement.classList.toggle("force-landscape-fallback", shouldRotate);
         }
     </script>
 </head>
@@ -330,7 +354,9 @@
         $("#proceed-button").click(function() {
             playAudio();
             playBackgroundMusic();
-            enterFullScreenLandscape();
+            enterFullScreenLandscape().then(function() {
+                fitPhoneLandscape();
+            });
             $("#intro").addClass("leaving");
             $("#white-glow").addClass("glow-active");
 
