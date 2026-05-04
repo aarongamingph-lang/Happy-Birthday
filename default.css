@@ -159,6 +159,7 @@ a {
 }
 
 #end-images img.active {
+  visibility: visible;
   animation: image-reveal 6s ease forwards;
 }
 
