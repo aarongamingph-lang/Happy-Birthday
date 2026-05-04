@@ -55,27 +55,23 @@
         }
 
         function fitPhoneLandscape() {
-            var landscapePhone = window.innerWidth > window.innerHeight && window.innerHeight <= 520;
-            var scale = landscapePhone ? Math.min(window.innerWidth / 1100, window.innerHeight / 680) : 1;
+            var smallScreen = window.innerWidth <= 920 || window.innerHeight <= 520;
+            var scale = smallScreen ? Math.min(window.innerWidth / 1100, window.innerHeight / 680) : 1;
             document.documentElement.style.setProperty("--scene-scale", scale);
         }
 
         fitPhoneLandscape();
         window.addEventListener("resize", function() {
             fitPhoneLandscape();
-            applyLandscapeFallback();
         });
         window.addEventListener("orientationchange", function() {
             setTimeout(function() {
                 fitPhoneLandscape();
-                applyLandscapeFallback();
             }, 350);
         });
 
         function enterFullScreenLandscape() {
             var page = document.documentElement;
-            document.documentElement.classList.add("landscape-requested");
-
             var fullScreen = page.requestFullscreen ? page.requestFullscreen() : Promise.resolve();
 
             return Promise.resolve(fullScreen).then(function() {
@@ -87,15 +83,8 @@
                         .catch(function() {});
                 }
             }).then(function() {
-                applyLandscapeFallback();
+                fitPhoneLandscape();
             }).catch(function() {});
-        }
-
-        function applyLandscapeFallback() {
-            var shouldRotate = document.documentElement.classList.contains("landscape-requested") &&
-                window.innerHeight > window.innerWidth &&
-                window.innerWidth <= 520;
-            document.documentElement.classList.toggle("force-landscape-fallback", shouldRotate);
         }
     </script>
 </head>
