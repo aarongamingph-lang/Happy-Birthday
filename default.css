@@ -326,6 +326,10 @@ a {
   background: #000;
 }
 
+.intro-panel {
+  max-width: 86vw;
+}
+
 #intro.leaving {
   opacity: 0;
   transition: opacity 700ms ease;
