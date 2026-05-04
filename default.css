@@ -8,6 +8,21 @@ body {
   overflow: auto;
 }
 
+html.force-landscape-fallback,
+html.force-landscape-fallback body {
+  width: 100vh;
+  height: 100vw;
+  overflow: hidden;
+  transform-origin: left top;
+}
+
+html.force-landscape-fallback body {
+  position: fixed;
+  left: 100vw;
+  top: 0;
+  transform: rotate(90deg);
+}
+
 button {
   font-family: inherit;
 }
