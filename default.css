@@ -8,6 +8,15 @@ body {
   overflow: auto;
 }
 
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
 button {
   font-family: inherit;
 }
@@ -19,8 +28,8 @@ a {
 #main {
   position: relative;
   z-index: 1;
-  width: 100%;
-  min-height: 100vh;
+  width: var(--app-width, 100vw);
+  min-height: var(--app-height, 100vh);
   opacity: 0;
   visibility: hidden;
   overflow: hidden;
@@ -109,8 +118,8 @@ a {
   position: fixed;
   inset: 0;
   z-index: 0;
-  width: 100vw;
-  height: 100vh;
+  width: var(--app-width, 100vw);
+  height: var(--app-height, 100vh);
   display: block;
   opacity: 0;
   visibility: hidden;
@@ -322,6 +331,8 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: var(--app-width, 100vw);
+  height: var(--app-height, 100vh);
   overflow: hidden;
   background: #000;
 }
@@ -453,14 +464,15 @@ a {
 }
 
 @media (max-width: 920px), (max-height: 520px) {
+  html,
   body {
     overflow: hidden;
     background-position: center center;
   }
 
   #main {
-    width: 100vw;
-    height: 100vh;
+    width: var(--app-width, 100vw);
+    height: var(--app-height, 100vh);
     overflow: hidden;
   }
 
@@ -489,6 +501,22 @@ a {
   }
 
   #end-images {
-    width: min(38vw, 240px);
+    width: min(34vw, 220px);
+  }
+}
+
+@media (max-width: 520px) and (orientation: portrait) {
+  .intro-panel {
+    width: min(86vw, 340px);
+    padding: 24px 18px 22px;
+  }
+
+  .intro-title {
+    font-size: 19px;
+  }
+
+  #proceed-button {
+    width: 100%;
+    max-width: 220px;
   }
 }
