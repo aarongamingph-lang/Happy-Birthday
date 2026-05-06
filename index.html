@@ -2,7 +2,7 @@
 <html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title>Happy birthday</title>	    
     <style>
         #main,
@@ -55,12 +55,18 @@
         }
 
         function fitPhoneLandscape() {
+            var viewport = window.visualViewport || window;
+            var viewportWidth = viewport.width || window.innerWidth;
+            var viewportHeight = viewport.height || window.innerHeight;
+            document.documentElement.style.setProperty("--app-width", viewportWidth + "px");
+            document.documentElement.style.setProperty("--app-height", viewportHeight + "px");
+
             if (!document.documentElement.classList.contains("landscape-started")) {
                 document.documentElement.style.setProperty("--scene-scale", 1);
                 return;
             }
-            var smallScreen = window.innerWidth <= 920 || window.innerHeight <= 520;
-            var scale = smallScreen ? Math.min(window.innerWidth / 1100, window.innerHeight / 680) : 1;
+            var smallScreen = viewportWidth <= 920 || viewportHeight <= 520;
+            var scale = smallScreen ? Math.min(viewportWidth / 1100, viewportHeight / 680) : 1;
             document.documentElement.style.setProperty("--scene-scale", scale);
         }
 
@@ -73,6 +79,10 @@
                 fitPhoneLandscape();
             }, 350);
         });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", fitPhoneLandscape);
+            window.visualViewport.addEventListener("scroll", fitPhoneLandscape);
+        }
 
         function enterFullScreenLandscape() {
             var page = document.documentElement;
@@ -335,13 +345,16 @@
                 var boxWidth = box.outerWidth();
                 var boxHeight = box.outerHeight();
                 var margin = 18;
+                var viewport = window.visualViewport || window;
+                var viewportWidth = viewport.width || window.innerWidth;
+                var viewportHeight = viewport.height || window.innerHeight;
                 var sceneScale = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--scene-scale")) || 1;
-                var treeLeft = (window.innerWidth - (1100 * sceneScale)) / 2 + (215 * sceneScale);
+                var treeLeft = (viewportWidth - (1100 * sceneScale)) / 2 + (215 * sceneScale);
                 var treeRight = treeLeft + (630 * sceneScale);
-                var treeTop = (window.innerHeight - (680 * sceneScale)) / 2 + (40 * sceneScale);
+                var treeTop = (viewportHeight - (680 * sceneScale)) / 2 + (40 * sceneScale);
                 var treeBottom = treeTop + (610 * sceneScale);
-                var maxLeft = Math.max(margin, window.innerWidth - boxWidth - margin);
-                var maxTop = Math.max(margin, window.innerHeight - boxHeight - margin);
+                var maxLeft = Math.max(margin, viewportWidth - boxWidth - margin);
+                var maxTop = Math.max(margin, viewportHeight - boxHeight - margin);
 
                 function isSafe(item) {
                     var right = item.left + boxWidth;
